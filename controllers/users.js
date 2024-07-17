@@ -25,7 +25,12 @@ const registerUser = async (r, w) => {
       password: User.prototype.generateHash(password),
     });
 
-    return user.createToken();
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      auth_token: user.createToken(),
+    };
   } catch (err) {
     console.error('Error creating User:', err);
     throw err;
@@ -37,7 +42,14 @@ const loginUser = async (r, w) => {
     const { login_field, password } = r.body;
     const user = await User.findOne(getLoginFilterFields(login_field));
 
-    if (user.validatePassword(password)) return user.createToken();
+    if (user.validatePassword(password)) {
+      return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        auth_token: user.createToken(),
+      };
+    }
   } catch (err) {
     console.error('Error logging in the User:', err);
     throw err;
